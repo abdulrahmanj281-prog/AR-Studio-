@@ -3,1437 +3,907 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VideoVault — Download Anything</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="AR Studio — premium computer accessories in Pakistan. Mechanical keyboards, precision mice, headsets, monitors and more, delivered nationwide with cash on delivery available.">
+<meta name="theme-color" content="#0b1220">
+<meta property="og:title" content="AR Studio | Premium Computer Accessories">
+<meta property="og:description" content="Level up your setup. Premium computer accessories in Pakistan, delivered nationwide.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b1220'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial' font-weight='bold' fill='%233b82f6' text-anchor='middle'%3EAR%3C/text%3E%3C/svg%3E">
+<title>AR Studio | Premium Computer Accessories</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080a0f;
-    --surface: #0d111a;
-    --card: #111622;
-    --border: rgba(255,255,255,0.07);
-    --accent: #00e5ff;
-    --accent2: #ff3cac;
-    --accent3: #7b2ff7;
-    --text: #e8edf5;
-    --muted: #5a6a82;
-    --glow: 0 0 40px rgba(0,229,255,0.15);
-  }
+    /* --- Design tokens --- */
+    :root {
+        --navy: #0b1220;
+        --navy-elevated: #131d33;
+        --blue: #3b82f6;
+        --blue-dark: #2563eb;
+        --green: #10b981;
+        --amber: #f59e0b;
+        --violet: #8b5cf6;
+        --teal: #14b8a6;
+        --rose: #f43f5e;
+        --ink: #0f172a;
+        --ink-soft: #64748b;
+        --paper: #f1f5f9;
+        --white: #ffffff;
+        --border: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(15,23,42,0.08);
+        --shadow-md: 0 10px 30px rgba(15,23,42,0.10);
+        --radius: 12px;
+    }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    cursor: none;
-  }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--paper);
+        color: var(--ink);
+        overflow-x: hidden;
+        line-height: 1.5;
+    }
 
-  /* Custom cursor */
-  .cursor {
-    position: fixed;
-    width: 12px; height: 12px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease, background 0.2s;
-    mix-blend-mode: screen;
-  }
-  .cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1.5px solid rgba(0,229,255,0.5);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.2s;
-  }
-  .cursor.hover { transform: scale(2.5); background: var(--accent2); }
-  .cursor-ring.hover { transform: scale(1.8); opacity: 0.3; }
+    h1, h2, h3, h4 { font-family: 'Sora', sans-serif; letter-spacing: -0.01em; }
 
-  /* Animated background */
-  .bg-canvas {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .bg-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.18;
-    animation: orbFloat 12s ease-in-out infinite;
-  }
-  .bg-orb:nth-child(1) {
-    width: 600px; height: 600px;
-    background: var(--accent3);
-    top: -200px; left: -100px;
-    animation-delay: 0s;
-  }
-  .bg-orb:nth-child(2) {
-    width: 500px; height: 500px;
-    background: var(--accent);
-    top: 30%; right: -150px;
-    animation-delay: -4s;
-  }
-  .bg-orb:nth-child(3) {
-    width: 400px; height: 400px;
-    background: var(--accent2);
-    bottom: -100px; left: 30%;
-    animation-delay: -8s;
-  }
+    a { color: inherit; }
 
-  @keyframes orbFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    33% { transform: translateY(-40px) scale(1.05); }
-    66% { transform: translateY(30px) scale(0.97); }
-  }
+    button { font-family: inherit; }
 
-  /* Grid overlay */
-  .grid-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image:
-      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-  }
+    :focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+    }
 
-  /* Noise texture */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 128px;
-  }
+    @media (prefers-reduced-motion: reduce) {
+        * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+        html { scroll-behavior: auto; }
+    }
 
-  /* Header */
-  header {
-    position: relative; z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 28px 60px;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    background: rgba(8,10,15,0.6);
-    position: fixed; top: 0; left: 0; right: 0;
-    animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes slideDown {
-    from { transform: translateY(-100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .logo {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent3));
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 20px rgba(0,229,255,0.3);
-    animation: logoPulse 3s ease-in-out infinite;
-  }
-  @keyframes logoPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0,229,255,0.3); }
-    50% { box-shadow: 0 0 35px rgba(0,229,255,0.6); }
-  }
-  .logo span { color: var(--accent); }
+    .skip-link {
+        position: absolute; left: -999px; top: 0; background: var(--blue); color: white;
+        padding: 0.75rem 1rem; z-index: 1200; border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus { left: 0; }
 
-  nav { display: flex; gap: 36px; align-items: center; }
-  nav a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: color 0.25s;
-    position: relative;
-  }
-  nav a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px; left: 0; right: 100%;
-    height: 1px;
-    background: var(--accent);
-    transition: right 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
-  }
-  nav a:hover { color: var(--text); }
-  nav a:hover::after { right: 0; }
+    /* --- Navigation --- */
+    header {
+        background-color: var(--navy);
+        color: var(--white);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+    }
 
-  .nav-badge {
-    background: linear-gradient(135deg, var(--accent3), var(--accent2));
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 1px;
-  }
+    .logo {
+        font-family: 'Sora', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        z-index: 101;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-  /* Main content */
-  main {
-    position: relative;
-    z-index: 5;
-    padding-top: 140px;
-  }
+    .logo span { color: var(--blue); }
 
-  /* Hero */
-  .hero {
-    text-align: center;
-    padding: 80px 20px 60px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+    nav.desktop-nav ul {
+        list-style: none;
+        display: flex;
+        gap: 2.25rem;
+    }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,229,255,0.08);
-    border: 1px solid rgba(0,229,255,0.2);
-    border-radius: 30px;
-    padding: 6px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    animation: fadeUp 0.8s 0.2s both;
-  }
-  .hero-badge .dot {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: blink 1.5s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.2; }
-  }
+    nav a {
+        color: rgba(255,255,255,0.85);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+        position: relative;
+        padding-bottom: 4px;
+    }
 
-  .hero h1 {
-    font-size: clamp(48px, 8vw, 90px);
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -3px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.8s 0.35s both;
-  }
-  .hero h1 .line2 {
-    display: block;
-    background: linear-gradient(135deg, var(--accent), var(--accent3), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    nav a::after {
+        content: '';
+        position: absolute; left: 0; bottom: 0; width: 0; height: 2px;
+        background: var(--blue); transition: width 0.25s;
+    }
 
-  .hero p {
-    font-size: 17px;
-    color: var(--muted);
-    max-width: 520px;
-    margin: 0 auto 50px;
-    line-height: 1.7;
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-    animation: fadeUp 0.8s 0.5s both;
-  }
+    nav a:hover, nav a.active { color: var(--white); }
+    nav a:hover::after, nav a.active::after { width: 100%; }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    .header-actions { display: flex; align-items: center; gap: 1.25rem; z-index: 101; }
 
-  /* Input section */
-  .input-container {
-    max-width: 720px;
-    margin: 0 auto 60px;
-    animation: fadeUp 0.8s 0.65s both;
-  }
+    .icon-btn {
+        background: none; border: none; color: var(--white); font-size: 1.3rem;
+        cursor: pointer; position: relative; display: flex; align-items: center; padding: 4px;
+    }
 
-  .platform-tabs {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
+    .cart-count {
+        background-color: var(--blue);
+        color: white;
+        border-radius: 50%;
+        min-width: 20px; height: 20px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.72rem; font-weight: 700;
+        position: absolute; top: -6px; right: -10px;
+        transition: transform 0.2s;
+    }
+    .cart-count.bump { animation: bump 0.35s ease; }
+    @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.4); } 100% { transform: scale(1); } }
 
-  .platform-tab {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    border-radius: 30px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: none;
-    transition: all 0.25s ease;
-    font-family: 'Syne', sans-serif;
-  }
-  .platform-tab .icon { font-size: 15px; }
-  .platform-tab:hover, .platform-tab.active {
-    border-color: var(--accent);
-    color: var(--text);
-    background: rgba(0,229,255,0.06);
-    box-shadow: 0 0 20px rgba(0,229,255,0.1);
-  }
-  .platform-tab.yt:hover, .platform-tab.yt.active { border-color: #ff4444; color: #ff4444; background: rgba(255,68,68,0.06); box-shadow: 0 0 20px rgba(255,68,68,0.1); }
-  .platform-tab.tt:hover, .platform-tab.tt.active { border-color: #00f2ea; color: #00f2ea; background: rgba(0,242,234,0.06); box-shadow: 0 0 20px rgba(0,242,234,0.1); }
-  .platform-tab.ig:hover, .platform-tab.ig.active { border-color: #e1306c; color: #e1306c; background: rgba(225,48,108,0.06); box-shadow: 0 0 20px rgba(225,48,108,0.1); }
-  .platform-tab.tw:hover, .platform-tab.tw.active { border-color: #1da1f2; color: #1da1f2; background: rgba(29,161,242,0.06); box-shadow: 0 0 20px rgba(29,161,242,0.1); }
-  .platform-tab.fb:hover, .platform-tab.fb.active { border-color: #4267B2; color: #4267B2; background: rgba(66,103,178,0.06); box-shadow: 0 0 20px rgba(66,103,178,0.1); }
+    .hamburger { display: none; font-size: 1.6rem; }
 
-  .search-box {
-    display: flex;
-    gap: 0;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 6px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .search-box::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(0,229,255,0.03), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .search-box:focus-within {
-    border-color: rgba(0,229,255,0.4);
-    box-shadow: 0 0 0 1px rgba(0,229,255,0.15), 0 8px 40px rgba(0,229,255,0.08);
-  }
-  .search-box:focus-within::before { opacity: 1; }
+    .mobile-nav {
+        position: fixed; top: 0; left: -100%; width: 78%; max-width: 320px; height: 100vh;
+        background-color: var(--navy); z-index: 99; display: flex; flex-direction: column;
+        padding-top: 90px; transition: left 0.3s ease; box-shadow: 2px 0 20px rgba(0,0,0,0.4);
+    }
+    .mobile-nav.open { left: 0; }
+    .mobile-nav a {
+        color: var(--white); text-decoration: none; font-size: 1.1rem; font-weight: 500;
+        padding: 1rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
 
-  .url-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-size: 15px;
-    font-family: 'DM Mono', monospace;
-    padding: 16px 20px;
-    min-width: 0;
-  }
-  .url-input::placeholder { color: var(--muted); }
+    /* --- Hero --- */
+    .hero {
+        background:
+            linear-gradient(160deg, rgba(11,18,32,0.92), rgba(11,18,32,0.75)),
+            url('https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
+        min-height: 62vh;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        text-align: center; color: var(--white); padding: 6rem 20px 4rem;
+    }
 
-  .paste-btn {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    border-radius: 10px;
-    color: var(--muted);
-    padding: 10px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: none;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
-    align-self: center;
-    white-space: nowrap;
-  }
-  .paste-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; max-width: 720px; }
+    .hero p { margin-top: 1rem; font-size: 1.1rem; color: rgba(255,255,255,0.8); max-width: 520px; }
 
-  .download-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent3));
-    border: none;
-    border-radius: 10px;
-    color: #080a0f;
-    padding: 14px 28px;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: none;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 0.5px;
-    transition: all 0.25s ease;
-    white-space: nowrap;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .download-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .download-btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,229,255,0.4); }
-  .download-btn:hover::after { opacity: 0.1; }
-  .download-btn:active { transform: scale(0.98); }
+    .hero-actions { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; justify-content: center; }
 
-  .btn-spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(0,0,0,0.3);
-    border-top-color: #080a0f;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .download-btn.loading .btn-text { display: none; }
-  .download-btn.loading .btn-spinner { display: block; }
-  .download-btn.loading .btn-icon { display: none; }
+    .btn {
+        padding: 0.85rem 1.9rem;
+        background-color: var(--blue);
+        color: white;
+        border: 2px solid var(--blue);
+        border-radius: 8px;
+        font-size: 0.98rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn:hover { background-color: var(--blue-dark); border-color: var(--blue-dark); }
+    .btn:active { transform: scale(0.98); }
+    .btn-outline { background: transparent; border-color: rgba(255,255,255,0.5); }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: white; }
+    .btn-full { width: 100%; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* Quality selector */
-  .quality-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-    padding: 0 8px;
-    flex-wrap: wrap;
-  }
-  .quality-label {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-weight: 500;
-  }
-  .quality-pills {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .quality-pill {
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 700;
-    cursor: none;
-    font-family: 'DM Mono', monospace;
-    transition: all 0.2s;
-  }
-  .quality-pill:hover { border-color: var(--accent); color: var(--accent); }
-  .quality-pill.active { background: var(--accent); border-color: var(--accent); color: #080a0f; }
+    /* --- Trust strip --- */
+    .trust-strip {
+        background: var(--navy-elevated);
+        color: rgba(255,255,255,0.85);
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem;
+        padding: 1.4rem 5%;
+    }
+    .trust-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 500; }
+    .trust-item svg { flex-shrink: 0; color: var(--blue); }
 
-  .format-select {
-    margin-left: auto;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-    padding: 5px 12px;
-    cursor: none;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .format-select:hover { border-color: var(--accent); }
+    /* --- Products --- */
+    .products-section { padding: 4rem 5%; max-width: 1280px; margin: 0 auto; }
+    .section-heading { text-align: center; margin-bottom: 0.75rem; }
+    .section-title { font-size: 2rem; color: var(--ink); font-weight: 800; }
+    .section-sub { text-align: center; color: var(--ink-soft); margin-bottom: 2.5rem; }
 
-  /* Result card */
-  .result-card {
-    max-width: 720px;
-    margin: 0 auto 40px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    display: none;
-    animation: fadeUp 0.5s ease forwards;
-    position: relative;
-    overflow: hidden;
-  }
-  .result-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent2));
-  }
-  .result-card.show { display: block; }
+    .category-filters {
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 2.5rem;
+    }
+    .filter-btn {
+        border: 1.5px solid var(--border); background: var(--white); color: var(--ink-soft);
+        padding: 0.5rem 1.1rem; border-radius: 999px; font-size: 0.88rem; font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .filter-btn.active { background: var(--ink); border-color: var(--ink); color: white; }
 
-  .result-inner {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-  }
-  .result-thumb {
-    width: 140px;
-    height: 90px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--surface), var(--card));
-    flex-shrink: 0;
-    overflow: hidden;
-    position: relative;
-  }
-  .result-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-  }
-  .thumb-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-  }
-  .result-info { flex: 1; min-width: 0; }
-  .result-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .result-meta {
-    display: flex;
-    gap: 16px;
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-  .result-meta span { display: flex; align-items: center; gap: 4px; }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.75rem;
+    }
 
-  .download-options {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .dl-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: none;
-    font-family: 'Syne', sans-serif;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  .dl-option:hover {
-    border-color: var(--accent);
-    background: rgba(0,229,255,0.06);
-    color: var(--accent);
-    box-shadow: 0 4px 20px rgba(0,229,255,0.1);
-  }
-  .dl-option .res { font-size: 10px; color: var(--muted); }
+    .product-card {
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
 
-  /* Progress bar */
-  .progress-wrap {
-    max-width: 720px;
-    margin: 0 auto 20px;
-    display: none;
-    animation: fadeUp 0.4s ease;
-  }
-  .progress-wrap.show { display: block; }
-  .progress-bar-outer {
-    height: 3px;
-    background: var(--surface);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.3s ease;
-    position: relative;
-  }
-  .progress-bar-inner::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 60px; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
-    animation: shimmer 1s ease-in-out infinite;
-  }
-  @keyframes shimmer {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-  .progress-text {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
+    .cat-bar { height: 4px; width: 100%; }
 
-  /* Error */
-  .error-msg {
-    max-width: 720px;
-    margin: 0 auto 20px;
-    background: rgba(255,60,60,0.06);
-    border: 1px solid rgba(255,60,60,0.2);
-    border-radius: 12px;
-    padding: 14px 20px;
-    font-size: 13px;
-    color: #ff6b6b;
-    font-family: 'DM Mono', monospace;
-    display: none;
-    animation: fadeUp 0.3s ease;
-  }
-  .error-msg.show { display: flex; align-items: center; gap: 10px; }
+    .img-container { overflow: hidden; position: relative; background: var(--paper); }
+    .product-img { width: 100%; height: 210px; object-fit: cover; display: block; transition: transform 0.5s ease; }
+    .product-card:hover .product-img { transform: scale(1.06); }
 
-  /* Stats section */
-  .stats {
-    max-width: 900px;
-    margin: 20px auto 80px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    animation: fadeUp 0.8s 0.8s both;
-  }
-  .stat-item {
-    background: var(--card);
-    padding: 32px;
-    text-align: center;
-    transition: background 0.3s;
-  }
-  .stat-item:hover { background: var(--surface); }
-  .stat-num {
-    font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -2px;
-    background: linear-gradient(135deg, var(--accent), var(--accent3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .stat-label { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .badge {
+        position: absolute; top: 10px; left: 10px;
+        background: var(--amber); color: var(--navy);
+        font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.6rem; border-radius: 6px;
+    }
 
-  /* Platform showcase */
-  .platforms-section {
-    max-width: 900px;
-    margin: 0 auto 80px;
-    animation: fadeUp 0.8s 1s both;
-  }
-  .section-label {
-    text-align: center;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    margin-bottom: 32px;
-  }
+    .product-info { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .product-category {
+        font-size: 0.75rem; font-weight: 700; margin-bottom: 0.4rem; width: fit-content;
+        padding: 0.15rem 0.55rem; border-radius: 5px;
+    }
+    .product-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .product-desc { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 0.75rem; flex-grow: 1; }
+    .product-price { font-size: 1.35rem; color: var(--ink); font-weight: 800; margin-bottom: 1rem; }
+    .add-to-cart { margin-top: auto; width: 100%; justify-content: center; }
+    .add-to-cart.added { background-color: var(--green); border-color: var(--green); }
 
-  .platforms-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-  }
-  .platform-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 16px;
-    text-align: center;
-    transition: all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
-    cursor: none;
-    position: relative;
-    overflow: hidden;
-  }
-  .platform-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .platform-card.yt-card::before { background: radial-gradient(circle at 50% 0%, rgba(255,68,68,0.12), transparent 70%); }
-  .platform-card.tt-card::before { background: radial-gradient(circle at 50% 0%, rgba(0,242,234,0.1), transparent 70%); }
-  .platform-card.ig-card::before { background: radial-gradient(circle at 50% 0%, rgba(225,48,108,0.1), transparent 70%); }
-  .platform-card.tw-card::before { background: radial-gradient(circle at 50% 0%, rgba(29,161,242,0.1), transparent 70%); }
-  .platform-card.fb-card::before { background: radial-gradient(circle at 50% 0%, rgba(66,103,178,0.1), transparent 70%); }
-  .platform-card:hover::before { opacity: 1; }
-  .platform-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(255,255,255,0.15);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  }
-  .p-icon { font-size: 32px; display: block; margin-bottom: 10px; }
-  .p-name { font-size: 13px; font-weight: 700; }
-  .p-count { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 4px; }
+    /* --- Cart sidebar --- */
+    .cart-sidebar {
+        position: fixed; top: 0; right: -420px; width: 420px; max-width: 100vw; height: 100vh;
+        background: white; box-shadow: -2px 0 20px rgba(0,0,0,0.2);
+        transition: right 0.3s ease; z-index: 1000;
+        display: flex; flex-direction: column; padding: 1.75rem;
+    }
+    .cart-sidebar.open { right: 0; }
 
-  /* Features */
-  .features {
-    max-width: 900px;
-    margin: 0 auto 100px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    animation: fadeUp 0.8s 1.2s both;
-  }
-  .feature-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .feature-card::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; left: 20px; right: 20px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .feature-card:hover::after { opacity: 1; }
-  .feature-card:hover { transform: translateY(-4px); border-color: rgba(0,229,255,0.2); }
-  .f-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(123,47,247,0.1));
-    border: 1px solid rgba(0,229,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 16px;
-  }
-  .f-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-  .f-desc { font-size: 13px; color: var(--muted); line-height: 1.6; font-family: 'DM Mono', monospace; font-weight: 300; }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 2px solid var(--paper); padding-bottom: 1rem; }
+    .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--ink); line-height: 1; }
 
-  /* Footer */
-  footer {
-    position: relative; z-index: 5;
-    border-top: 1px solid var(--border);
-    padding: 40px 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .footer-copy { font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; }
-  .footer-links { display: flex; gap: 24px; }
-  .footer-links a { color: var(--muted); text-decoration: none; font-size: 12px; transition: color 0.2s; font-family: 'DM Mono', monospace; }
-  .footer-links a:hover { color: var(--accent); }
+    .cart-items { flex-grow: 1; overflow-y: auto; }
+    .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--ink-soft); }
+    .cart-empty svg { color: var(--border); margin-bottom: 1rem; }
 
-  /* Floating particles */
-  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
-  .particle {
-    position: absolute;
-    width: 2px; height: 2px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0;
-    animation: particleFloat linear infinite;
-  }
+    .cart-item { display: flex; gap: 0.85rem; margin-bottom: 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--paper); }
+    .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--paper); }
+    .cart-item-info { flex-grow: 1; min-width: 0; }
+    .cart-item-info h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .cart-item-price { font-size: 0.85rem; color: var(--ink-soft); }
+    .qty-stepper { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+    .qty-btn {
+        width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: white;
+        cursor: pointer; font-weight: 700; color: var(--ink); display: flex; align-items: center; justify-content: center;
+        font-size: 0.9rem; line-height: 1;
+    }
+    .qty-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .qty-value { font-size: 0.88rem; font-weight: 600; min-width: 16px; text-align: center; }
+    .remove-btn { color: #ef4444; background: none; border: none; cursor: pointer; font-size: 0.78rem; font-weight: 600; align-self: flex-start; }
 
-  @keyframes particleFloat {
-    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
-  }
+    .free-delivery-note {
+        font-size: 0.82rem; padding: 0.6rem 0.8rem; border-radius: 8px; margin-bottom: 1rem;
+        background: #eff6ff; color: var(--blue-dark); font-weight: 500;
+    }
+    .free-delivery-note.unlocked { background: #ecfdf5; color: #047857; }
 
-  /* Toast notification */
-  .toast {
-    position: fixed;
-    bottom: 30px; right: 30px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
-    max-width: 300px;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast-icon { font-size: 18px; }
+    .cart-footer { margin-top: 1rem; border-top: 2px solid var(--paper); padding-top: 1rem; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.92rem; color: var(--ink-soft); }
+    .cart-total { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 800; margin: 0.75rem 0 1rem; color: var(--ink); }
+    .checkout-btn { background-color: var(--green); border-color: var(--green); }
+    .checkout-btn:hover { background-color: #0d9c6f; border-color: #0d9c6f; }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    header { padding: 20px 24px; }
-    nav { display: none; }
-    .hero { padding: 60px 20px 40px; }
-    .platforms-grid { grid-template-columns: repeat(3, 1fr); }
-    .features { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 20px; padding: 30px 24px; }
-    .result-inner { flex-direction: column; }
-    .result-thumb { width: 100%; height: 160px; }
-  }
+    /* --- Checkout modal --- */
+    .checkout-modal {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: white; padding: 2rem; border-radius: 14px; z-index: 1001;
+        width: 92%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        display: none; max-height: 90vh; overflow-y: auto;
+    }
+    .checkout-modal.active { display: block; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 
-  /* URL detection animation */
-  @keyframes detectPulse {
-    0% { box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(0,229,255,0); }
-    100% { box-shadow: 0 0 0 0 rgba(0,229,255,0); }
-  }
-  .detected { animation: detectPulse 0.6s ease; }
+    .field-group { margin-bottom: 1rem; }
+    .checkout-form label.field-label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--ink-soft); }
+    .checkout-form input, .checkout-form textarea {
+        width: 100%; padding: 0.7rem 0.8rem; border: 1.5px solid var(--border); border-radius: 8px;
+        font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .checkout-form input:focus, .checkout-form textarea:focus { border-color: var(--blue); }
+    .checkout-form input:invalid:not(:placeholder-shown) { border-color: #ef4444; }
+    .field-hint { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.3rem; }
 
-  .platform-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-left: auto;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .platform-indicator.show { opacity: 1; }
+    .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+    .payment-option { border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; font-weight: 500; }
+    .payment-option:hover { border-color: var(--blue); background: #f8fafc; }
+    .payment-option input[type="radio"] { display: none; }
+    .payment-option:has(input:checked) { border-color: var(--blue); background-color: #eff6ff; font-weight: 700; color: var(--blue-dark); }
+
+    .order-summary-mini { background: var(--paper); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--ink-soft); }
+    .order-summary-mini strong { color: var(--ink); }
+
+    /* --- Overlays --- */
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); display: none; z-index: 999; }
+    .overlay.active { display: block; }
+    .menu-overlay { z-index: 98; }
+
+    /* --- Toast --- */
+    #toastContainer { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1300; display: flex; flex-direction: column; gap: 0.6rem; align-items: center; }
+    .toast {
+        background: var(--ink); color: white; padding: 0.75rem 1.2rem; border-radius: 8px;
+        font-size: 0.88rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        display: flex; align-items: center; gap: 0.5rem;
+        animation: toast-in 0.25s ease, toast-out 0.25s ease 2.5s forwards;
+    }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toast-out { to { opacity: 0; transform: translateY(10px); } }
+
+    /* --- Back to top --- */
+    .back-to-top {
+        position: fixed; bottom: 1.5rem; right: 1.5rem; width: 46px; height: 46px; border-radius: 50%;
+        background: var(--ink); color: white; border: none; cursor: pointer; display: none;
+        align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 90;
+        transition: background 0.2s;
+    }
+    .back-to-top.visible { display: flex; }
+    .back-to-top:hover { background: var(--blue); }
+
+    /* --- Footer --- */
+    footer { background-color: var(--navy); color: rgba(255,255,255,0.8); padding: 3.5rem 5% 1.5rem; }
+    .footer-grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; padding-bottom: 2.5rem; }
+    .footer-col h3, .footer-col h4 { color: white; margin-bottom: 1rem; }
+    .footer-col h4 { font-size: 0.95rem; }
+    .footer-col p { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.65); }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 0.6rem; }
+    .footer-col a { text-decoration: none; color: rgba(255,255,255,0.7); font-size: 0.88rem; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--blue); }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+        .cart-sidebar { width: 100%; right: -100%; }
+        .desktop-nav { display: none; }
+        .hamburger { display: block; background: none; border: none; }
+        .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+        .payment-methods { grid-template-columns: 1fr; }
+    }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+<a href="#products" class="skip-link">Skip to products</a>
 
-<div class="bg-canvas">
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-</div>
-<div class="grid-overlay"></div>
-<div class="particles" id="particles"></div>
+<div class="overlay" id="overlay"></div>
+<div class="overlay menu-overlay" id="menuOverlay"></div>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">⬇</div>
-    Video<span>Vault</span>
-  </div>
-  <nav>
-    <a href="#features">Features</a>
-    <a href="#platforms">Platforms</a>
-    <a href="#">API</a>
-    <span class="nav-badge">FREE</span>
-  </nav>
+    <div class="logo">AR <span>Studio</span></div>
+
+    <nav class="desktop-nav" aria-label="Primary">
+        <ul>
+            <li><a href="#home" class="nav-link" data-section="home">Home</a></li>
+            <li><a href="#products" class="nav-link" data-section="products">Products</a></li>
+            <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="header-actions">
+        <button class="icon-btn" id="cartBtn" aria-label="Open cart">
+            🛒
+            <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+        </button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">☰</button>
+    </div>
 </header>
 
-<main>
-  <section class="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      No watermarks · No signup · 100% Free
-    </div>
-    <h1>
-      Download Any<br>
-      <span class="line2">Video Instantly</span>
-    </h1>
-    <p>Paste a URL from YouTube, TikTok, Instagram, Twitter, Facebook and more — get your file in seconds.</p>
-  </section>
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+    <a href="#home" class="mobile-link">Home</a>
+    <a href="#products" class="mobile-link">Products</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+</nav>
 
-  <div class="input-container" id="inputContainer">
-    <div class="platform-tabs">
-      <button class="platform-tab yt active" onclick="selectTab(this,'yt')"><span class="icon">▶</span> YouTube</button>
-      <button class="platform-tab tt" onclick="selectTab(this,'tt')"><span class="icon">♪</span> TikTok</button>
-      <button class="platform-tab ig" onclick="selectTab(this,'ig')"><span class="icon">◈</span> Instagram</button>
-      <button class="platform-tab tw" onclick="selectTab(this,'tw')"><span class="icon">✦</span> Twitter</button>
-      <button class="platform-tab fb" onclick="selectTab(this,'fb')"><span class="icon">◉</span> Facebook</button>
+<section id="home" class="hero">
+    <h1>Level up your setup</h1>
+    <p>Premium computer accessories in Pakistan — mechanical keyboards, precision mice, audio and displays, delivered nationwide.</p>
+    <div class="hero-actions">
+        <a href="#products"><button class="btn">Shop Now</button></a>
+        <a href="https://wa.me/03113438570" target="_blank" rel="noopener"><button class="btn btn-outline">Chat on WhatsApp</button></a>
     </div>
+</section>
 
-    <div class="search-box" id="searchBox">
-      <input
-        type="text"
-        class="url-input"
-        id="urlInput"
-        placeholder="Paste video URL here..."
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <span class="platform-indicator" id="platformIndicator"></span>
-      <button class="paste-btn" onclick="pasteUrl()">PASTE</button>
-      <button class="download-btn" id="downloadBtn" onclick="startDownload()">
-        <span class="btn-icon">⬇</span>
-        <span class="btn-text">FETCH</span>
-        <div class="btn-spinner"></div>
-      </button>
+<div class="trust-strip">
+    <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="17.5" cy="17.5" r="1.5"/></svg>
+        All Over Pakistan delivery
     </div>
-
-    <div class="quality-row">
-      <span class="quality-label">Quality:</span>
-      <div class="quality-pills">
-        <button class="quality-pill" onclick="setQuality(this)">4K</button>
-        <button class="quality-pill active" onclick="setQuality(this)">1080p</button>
-        <button class="quality-pill" onclick="setQuality(this)">720p</button>
-        <button class="quality-pill" onclick="setQuality(this)">480p</button>
-        <button class="quality-pill" onclick="setQuality(this)">Audio</button>
-      </div>
-      <select class="format-select" id="formatSelect">
-        <option value="mp4">MP4</option>
-        <option value="webm">WebM</option>
-        <option value="mov">MOV</option>
-        <option value="mp3">MP3</option>
-        <option value="m4a">M4A</option>
-      </select>
+    <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
+        Secure checkout
     </div>
-  </div>
-
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-bar-outer">
-      <div class="progress-bar-inner" id="progressBar"></div>
+    <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>
+        Cash on delivery
     </div>
-    <div class="progress-text">
-      <span id="progressStatus">Analyzing URL...</span>
-      <span id="progressPct">0%</span>
+    <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        7-day easy returns
     </div>
-  </div>
-
-  <div class="error-msg" id="errorMsg">
-    <span>⚠</span>
-    <span id="errorText">Please enter a valid video URL.</span>
-  </div>
-
-  <div class="result-card" id="resultCard">
-    <div class="result-inner">
-      <div class="result-thumb" id="resultThumb">
-        <div class="thumb-placeholder" id="thumbPlaceholder">🎬</div>
-        <img id="thumbImg" src="" alt="">
-      </div>
-      <div class="result-info">
-        <div class="result-title" id="resultTitle">Video Title</div>
-        <div class="result-meta" id="resultMeta">
-          <span>📺 <span id="metaDuration">—</span></span>
-          <span>👁 <span id="metaViews">—</span></span>
-          <span>📅 <span id="metaDate">—</span></span>
-          <span>🎵 <span id="metaAudio">—</span></span>
-        </div>
-        <div class="download-options" id="downloadOptions"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat-item">
-      <div class="stat-num" id="stat1">0</div>
-      <div class="stat-label">Videos Downloaded</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">50+</div>
-      <div class="stat-label">Supported Sites</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">∞</div>
-      <div class="stat-label">Daily Downloads</div>
-    </div>
-  </div>
-
-  <section class="platforms-section" id="platforms">
-    <div class="section-label">Supported Platforms</div>
-    <div class="platforms-grid">
-      <div class="platform-card yt-card"><span class="p-icon">▶</span><div class="p-name">YouTube</div><div class="p-count">Any video</div></div>
-      <div class="platform-card tt-card"><span class="p-icon">♪</span><div class="p-name">TikTok</div><div class="p-count">No watermark</div></div>
-      <div class="platform-card ig-card"><span class="p-icon">◈</span><div class="p-name">Instagram</div><div class="p-count">Reels & Posts</div></div>
-      <div class="platform-card tw-card"><span class="p-icon">✦</span><div class="p-name">Twitter / X</div><div class="p-count">GIFs too</div></div>
-      <div class="platform-card fb-card"><span class="p-icon">◉</span><div class="p-name">Facebook</div><div class="p-count">Public videos</div></div>
-    </div>
-  </section>
-
-  <section class="features" id="features">
-    <div class="feature-card">
-      <div class="f-icon">🚫</div>
-      <div class="f-title">Zero Watermarks</div>
-      <div class="f-desc">Download TikTok videos completely clean, no platform branding or logos attached.</div>
-    </div>
-    <div class="feature-card">
-      <div class="f-icon">⚡</div>
-      <div class="f-title">Lightning Fast</div>
-      <div class="f-desc">Our servers fetch and process videos in under 3 seconds using distributed CDN nodes.</div>
-    </div>
-    <div class="feature-card">
-      <div class="f-icon">🔒</div>
-      <div class="f-title">Private & Secure</div>
-      <div class="f-desc">No account needed. URLs aren't logged. Your downloads stay completely private.</div>
-    </div>
-    <div class="feature-card">
-      <div class="f-icon">🎯</div>
-      <div class="f-title">URL Detection</div>
-      <div class="f-desc">Auto-detects the platform the moment you paste. No manual selection needed.</div>
-    </div>
-    <div class="feature-card">
-      <div class="f-icon">🎬</div>
-      <div class="f-title">4K Quality</div>
-      <div class="f-desc">Download in full 4K, 1080p, 720p, or extract audio as MP3 or M4A.</div>
-    </div>
-    <div class="feature-card">
-      <div class="f-icon">♾</div>
-      <div class="f-title">Unlimited Use</div>
-      <div class="f-desc">No daily limits, no captchas, no subscriptions. Download as much as you want.</div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="footer-copy">© 2026 VideoVault — Free video downloader</div>
-  <div class="footer-links">
-    <a href="#">Privacy</a>
-    <a href="#">Terms</a>
-    <a href="#">DMCA</a>
-    <a href="#">Contact</a>
-  </div>
-</footer>
-
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toastIcon">✓</span>
-  <span id="toastMsg">URL pasted!</span>
 </div>
 
+<section id="products" class="products-section">
+    <div class="section-heading">
+        <h2 class="section-title">Featured Accessories</h2>
+        <p class="section-sub">Hand-picked gear for gamers, creators and everyday work.</p>
+    </div>
+    <div class="category-filters" id="categoryFilters" role="group" aria-label="Filter by category"></div>
+    <div class="product-grid" id="productGrid"></div>
+</section>
+
+<div class="cart-sidebar" id="cartSidebar" role="dialog" aria-modal="true" aria-label="Shopping cart">
+    <div class="cart-header">
+        <h2>Your Cart</h2>
+        <button class="close-btn" id="closeCart" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <div class="free-delivery-note" id="freeDeliveryNote" hidden></div>
+        <div class="summary-row">
+            <span>Subtotal:</span>
+            <span id="cartSubtotal">Rs 0</span>
+        </div>
+        <div class="summary-row">
+            <span>Delivery:</span>
+            <span id="cartDelivery">Rs 0</span>
+        </div>
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">Rs 0</span>
+        </div>
+        <button class="btn checkout-btn btn-full" id="openCheckoutModal">Proceed to Checkout</button>
+    </div>
+</div>
+
+<div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Checkout">
+    <div class="modal-header">
+        <h2>Checkout Details</h2>
+        <button class="close-btn" id="closeModal" aria-label="Close checkout">&times;</button>
+    </div>
+    <div class="order-summary-mini" id="orderSummaryMini"></div>
+    <form class="checkout-form" id="checkoutForm">
+        <div class="field-group">
+            <label class="field-label" for="customerName">Full name</label>
+            <input type="text" id="customerName" name="customerName" placeholder="e.g. Ali Raza" minlength="3" required>
+        </div>
+        <div class="field-group">
+            <label class="field-label" for="customerPhone">Mobile number</label>
+            <input type="tel" id="customerPhone" name="customerPhone" placeholder="03XXXXXXXXX" pattern="^(0|\+92)3[0-9]{9}$" required>
+            <p class="field-hint">Format: 03XXXXXXXXX or +923XXXXXXXXX</p>
+        </div>
+        <div class="field-group">
+            <label class="field-label" for="customerAddress">Delivery address</label>
+            <textarea id="customerAddress" name="customerAddress" placeholder="House, street, area, city" rows="3" minlength="10" required></textarea>
+        </div>
+
+        <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Select payment method</h4>
+        <div class="payment-methods">
+            <label class="payment-option"><input type="radio" name="payment" value="Easypaisa" required> Easypaisa</label>
+            <label class="payment-option"><input type="radio" name="payment" value="JazzCash"> JazzCash</label>
+            <label class="payment-option"><input type="radio" name="payment" value="Raqmi Islamic"> Raqmi Islamic</label>
+            <label class="payment-option"><input type="radio" name="payment" value="Meezan Bank"> Meezan Bank</label>
+            <label class="payment-option"><input type="radio" name="payment" value="HBL"> HBL</label>
+            <label class="payment-option"><input type="radio" name="payment" value="COD"> Cash on Delivery</label>
+        </div>
+
+        <button type="submit" class="btn checkout-btn btn-full" id="submitOrderBtn">Order via WhatsApp (Rs <span id="modalTotal">0</span>)</button>
+        <p style="text-align: center; font-size: 0.78rem; margin-top: 10px; color: #64748b;">You'll be redirected to WhatsApp to confirm your order with us.</p>
+    </form>
+</div>
+
+<div id="toastContainer" aria-live="polite"></div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<footer id="contact">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h3>AR Studio</h3>
+            <p>Premium computer accessories for gamers, creators and everyday work — sourced, tested, and delivered across Pakistan.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Quick links</h4>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Get in touch</h4>
+            <ul>
+                <li><a href="https://wa.me/03113438570" target="_blank" rel="noopener">WhatsApp: +923113438570</a></li>
+                <li><a href="mailto:hello@arstudio.pk">hello@arstudio.pk</a></li>
+                <li>Mon–Sat, 10am–8pm</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>&copy; <span id="year"></span> AR Studio Pakistan. All rights reserved.</span>
+        <span>Prices in PKR · Delivery nationwide</span>
+    </div>
+</footer>
+
 <script>
-// ==================== CURSOR ====================
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
+(function () {
+    'use strict';
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx - 6 + 'px';
-  cursor.style.top = my - 6 + 'px';
-});
+    // --- CONFIGURATION ---
+    // Update this to your business WhatsApp number (country code, no + or 00)
+    const whatsappNumber = "03113438570";
+    const deliveryFee = 250;              // Standard shipping rate in PKR
+    const freeDeliveryThreshold = 20000;  // Spend this much to get free delivery
 
-function animRing() {
-  rx += (mx - rx - 18) * 0.12;
-  ry += (my - ry - 18) * 0.12;
-  ring.style.left = rx + 'px';
-  ring.style.top = ry + 'px';
-  requestAnimationFrame(animRing);
-}
-animRing();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-document.querySelectorAll('button, a, input, select, .platform-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
-  el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
-});
+    // --- Product database ---
+    const categoryColors = {
+        Keyboards: 'var(--blue)',
+        Mice: 'var(--violet)',
+        Audio: 'var(--amber)',
+        Displays: 'var(--teal)',
+        Accessories: 'var(--rose)'
+    };
 
-// ==================== PARTICLES ====================
-const pContainer = document.getElementById('particles');
-for (let i = 0; i < 18; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  const x = Math.random() * 100;
-  const dur = 8 + Math.random() * 15;
-  const del = Math.random() * 15;
-  const size = Math.random() > 0.7 ? 3 : 2;
-  const colors = ['var(--accent)', 'var(--accent2)', 'var(--accent3)'];
-  p.style.cssText = `left:${x}%;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*3)]};animation-duration:${dur}s;animation-delay:-${del}s;`;
-  pContainer.appendChild(p);
-}
+    const products = [
+        { id: 1, name: "Mechanical Keyboard", category: "Keyboards", price: 12500, badge: "Best Seller", desc: "Hot-swappable switches, per-key RGB.", image: "https://images.unsplash.com/photo-1595225476474-87563907a212?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+        { id: 2, name: "Precision Mouse", category: "Mice", price: 6500, desc: "16,000 DPI optical sensor, lightweight shell.", image: "https://images.unsplash.com/photo-1527814050087-1511d5261a43?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+        { id: 3, name: "Noise-Cancelling Headset X1", category: "Audio", price: 18000, badge: "New", desc: "Active noise cancellation with mic monitoring.", image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+        { id: 4, name: "UltraWide 4K Monitor", category: "Displays", price: 95000, desc: "34-inch curved panel, 144Hz refresh rate.", image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+        { id: 5, name: "RGB Extended Mousepad", category: "Accessories", price: 3500, desc: "900mm stitched-edge desk mat with RGB rim.", image: "https://images.unsplash.com/photo-1629837905891-c1e133eddb6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" },
+        { id: 6, name: "HD Streaming Webcam", category: "Accessories", price: 11000, desc: "1080p60 with auto low-light correction.", image: "https://images.unsplash.com/photo-1623912176887-8eab5103aae0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" }
+    ];
 
-// ==================== COUNTER ANIMATION ====================
-function animCount(el, end, suffix = '') {
-  let start = 0;
-  const step = end / 60;
-  const tick = () => {
-    start = Math.min(start + step, end);
-    el.textContent = Math.round(start).toLocaleString() + suffix;
-    if (start < end) requestAnimationFrame(tick);
-  };
-  tick();
-}
-setTimeout(() => {
-  animCount(document.getElementById('stat1'), 2847193, '+');
-}, 1200);
+    const categories = ["All", ...new Set(products.map(p => p.category))];
 
-// ==================== PLATFORM DETECTION ====================
-const platforms = {
-  youtube: { re: /youtu(be\.com|\.be)/i, label: '▶ YouTube', color: '#ff4444', tab: 'yt' },
-  tiktok: { re: /tiktok\.com/i, label: '♪ TikTok', color: '#00f2ea', tab: 'tt' },
-  instagram: { re: /instagram\.com/i, label: '◈ Instagram', color: '#e1306c', tab: 'ig' },
-  twitter: { re: /(twitter|x)\.com/i, label: '✦ Twitter/X', color: '#1da1f2', tab: 'tw' },
-  facebook: { re: /facebook\.com|fb\.watch/i, label: '◉ Facebook', color: '#4267B2', tab: 'fb' }
-};
+    let cart = loadCart();
+    let activeCategory = "All";
+    let grandTotal = 0;
 
-const indicator = document.getElementById('platformIndicator');
-const urlInput = document.getElementById('urlInput');
+    // --- DOM refs ---
+    const productGrid = document.getElementById('productGrid');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const cartItemsContainer = document.getElementById('cartItems');
+    const overlay = document.getElementById('overlay');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const mobileNav = document.getElementById('mobileNav');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const toastContainer = document.getElementById('toastContainer');
+    const backToTop = document.getElementById('backToTop');
+    const freeDeliveryNote = document.getElementById('freeDeliveryNote');
 
-function detectPlatform(url) {
-  for (const [name, data] of Object.entries(platforms)) {
-    if (data.re.test(url)) return { name, ...data };
-  }
-  return null;
-}
+    // --- Persistence ---
+    function loadCart() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('arStudioCart'));
+            return Array.isArray(saved) ? saved : [];
+        } catch (e) {
+            return [];
+        }
+    }
+    function saveCart() {
+        try { localStorage.setItem('arStudioCart', JSON.stringify(cart)); } catch (e) { /* storage unavailable */ }
+    }
 
-urlInput.addEventListener('input', () => {
-  const url = urlInput.value.trim();
-  const det = detectPlatform(url);
-  if (det && url.length > 10) {
-    indicator.textContent = det.label;
-    indicator.style.background = det.color + '22';
-    indicator.style.border = `1px solid ${det.color}44`;
-    indicator.style.color = det.color;
-    indicator.classList.add('show');
-    // Auto-select tab
-    document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
-    const tab = document.querySelector(`.platform-tab.${det.tab}`);
-    if (tab) tab.classList.add('active');
-    // Pulse effect
-    document.getElementById('searchBox').classList.add('detected');
-    setTimeout(() => document.getElementById('searchBox').classList.remove('detected'), 600);
-  } else {
-    indicator.classList.remove('show');
-  }
-  hideError();
-  hideResult();
-});
+    // --- Toasts ---
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
 
-// ==================== TABS ====================
-function selectTab(el, type) {
-  document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const placeholders = {
-    yt: 'https://youtube.com/watch?v=...',
-    tt: 'https://tiktok.com/@user/video/...',
-    ig: 'https://instagram.com/reel/...',
-    tw: 'https://twitter.com/user/status/...',
-    fb: 'https://facebook.com/watch/?v=...'
-  };
-  urlInput.placeholder = placeholders[type] || 'Paste video URL here...';
-  urlInput.focus();
-}
+    // --- Category filters ---
+    function renderFilters() {
+        categoryFilters.innerHTML = '';
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn' + (cat === activeCategory ? ' active' : '');
+            btn.textContent = cat;
+            btn.setAttribute('aria-pressed', cat === activeCategory);
+            btn.addEventListener('click', () => {
+                activeCategory = cat;
+                renderFilters();
+                renderProducts();
+            });
+            categoryFilters.appendChild(btn);
+        });
+    }
 
-// ==================== QUALITY & FORMAT ====================
-function setQuality(el) {
-  document.querySelectorAll('.quality-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  const formatSel = document.getElementById('formatSelect');
-  if (el.textContent === 'Audio') {
-    formatSel.value = 'mp3';
-  } else if (formatSel.value === 'mp3' || formatSel.value === 'm4a') {
-    formatSel.value = 'mp4';
-  }
-}
+    // --- Render products ---
+    function renderProducts() {
+        productGrid.innerHTML = '';
+        const visible = activeCategory === "All" ? products : products.filter(p => p.category === activeCategory);
 
-// ==================== PASTE ====================
-async function pasteUrl() {
-  try {
-    const text = await navigator.clipboard.readText();
-    urlInput.value = text;
-    urlInput.dispatchEvent(new Event('input'));
-    showToast('📋', 'URL pasted!');
-  } catch {
-    urlInput.focus();
-    showToast('⌨', 'Press Ctrl+V to paste');
-  }
-}
+        if (visible.length === 0) {
+            productGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--ink-soft);">No products in this category yet.</p>';
+            return;
+        }
 
-// ==================== TOAST ====================
-function showToast(icon, msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastIcon').textContent = icon;
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
+        visible.forEach(product => {
+            const color = categoryColors[product.category] || 'var(--blue)';
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="cat-bar" style="background:${color}"></div>
+                <div class="img-container">
+                    <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 300%27%3E%3Crect width=%27400%27 height=%27300%27 fill=%27%23f1f5f9%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2718%27 fill=%27%2394a3b8%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3EImage unavailable%3C/text%3E%3C/svg%3E'">
+                    ${product.badge ? `<span class="badge">${product.badge}</span>` : ''}
+                </div>
+                <div class="product-info">
+                    <span class="product-category" style="background:${color}22; color:${color}">${product.category}</span>
+                    <h3 class="product-title">${product.name}</h3>
+                    <p class="product-desc">${product.desc}</p>
+                    <div class="product-price">Rs ${product.price.toLocaleString('en-US')}</div>
+                    <button class="btn add-to-cart" data-id="${product.id}">Add to Cart</button>
+                </div>
+            `;
+            productGrid.appendChild(card);
+        });
 
-// ==================== ERRORS ====================
-function showError(msg) {
-  const e = document.getElementById('errorMsg');
-  document.getElementById('errorText').textContent = msg;
-  e.classList.add('show');
-}
-function hideError() {
-  document.getElementById('errorMsg').classList.remove('show');
-}
-function hideResult() {
-  document.getElementById('resultCard').classList.remove('show');
-  document.getElementById('progressWrap').classList.remove('show');
-}
+        productGrid.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', () => addToCart(Number(btn.dataset.id), btn));
+        });
+    }
 
-// ==================== COBALT API INTEGRATION ====================
-// Uses cobalt.tools open API — free, no key needed, no watermarks
-const COBALT_API = 'https://cobalt.tools/api/json';
+    // --- Cart logic ---
+    function addToCart(id, btnEl) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+        const existing = cart.find(item => item.id === id);
+        if (existing) existing.quantity++;
+        else cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 });
 
-// Quality map for cobalt vQuality param
-const qualityMap = { '4K': '2160', '1080p': '1080', '720p': '720', '480p': '480', '360p': '360' };
+        saveCart();
+        updateCart();
+        showToast(`${product.name} added to cart`);
 
-let isProcessing = false;
+        if (btnEl) {
+            const original = btnEl.textContent;
+            btnEl.textContent = 'Added ✓';
+            btnEl.classList.add('added');
+            btnEl.disabled = true;
+            setTimeout(() => {
+                btnEl.textContent = original;
+                btnEl.classList.remove('added');
+                btnEl.disabled = false;
+            }, 900);
+        }
+    }
 
-async function callCobalt(videoUrl, vQuality = '1080', isAudioOnly = false, audioFormat = 'mp3') {
-  const body = {
-    url: videoUrl,
-    vQuality,
-    isAudioOnly,
-    aFormat: audioFormat,
-    filenamePattern: 'pretty',
-    isNoTTWatermark: true,      // TikTok no watermark
-    isTTFullAudio: false,
-    isAudioMuted: false,
-    dubLang: false,
-    disableMetadata: false
-  };
+    function changeQuantity(id, delta) {
+        const item = cart.find(i => i.id === id);
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+        saveCart();
+        updateCart();
+    }
 
-  const res = await fetch(COBALT_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
+    function removeFromCart(id) {
+        cart = cart.filter(item => item.id !== id);
+        saveCart();
+        updateCart();
+    }
 
-  if (!res.ok) throw new Error(`API error ${res.status}`);
-  return await res.json();
-}
+    function updateCart() {
+        cartItemsContainer.innerHTML = '';
+        let subtotal = 0, count = 0;
 
-// Trigger a real browser download from a URL
-function triggerDownload(href, filename) {
-  const a = document.createElement('a');
-  a.href = href;
-  a.download = filename || 'video';
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => a.remove(), 500);
-}
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = `
+                <div class="cart-empty">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+                    <p>Your cart is empty.</p>
+                    <button class="btn" id="continueShoppingBtn" style="margin-top:1rem;">Continue Shopping</button>
+                </div>`;
+            const cs = document.getElementById('continueShoppingBtn');
+            if (cs) cs.addEventListener('click', () => { closeAll(); document.getElementById('products').scrollIntoView({ behavior: 'smooth' }); });
+        } else {
+            cart.forEach(item => {
+                subtotal += item.price * item.quantity;
+                count += item.quantity;
+                const row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <span class="cart-item-price">Rs ${item.price.toLocaleString('en-US')}</span>
+                        <div class="qty-stepper">
+                            <button class="qty-btn" aria-label="Decrease quantity" data-action="dec" data-id="${item.id}">−</button>
+                            <span class="qty-value">${item.quantity}</span>
+                            <button class="qty-btn" aria-label="Increase quantity" data-action="inc" data-id="${item.id}">+</button>
+                        </div>
+                    </div>
+                    <button class="remove-btn" data-id="${item.id}" aria-label="Remove ${item.name}">Remove</button>
+                `;
+                cartItemsContainer.appendChild(row);
+            });
 
-// ==================== MAIN DOWNLOAD ====================
-async function startDownload() {
-  if (isProcessing) return;
-  const url = urlInput.value.trim();
+            cartItemsContainer.querySelectorAll('.qty-btn').forEach(btn => {
+                btn.addEventListener('click', () => changeQuantity(Number(btn.dataset.id), btn.dataset.action === 'inc' ? 1 : -1));
+            });
+            cartItemsContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', () => removeFromCart(Number(btn.dataset.id)));
+            });
+        }
 
-  if (!url) { showError('Please enter a video URL.'); return; }
-  if (!/^https?:\/\/.+/i.test(url)) { showError('Please enter a valid URL starting with https://'); return; }
+        // Free delivery logic
+        let currentDelivery = 0;
+        if (count > 0) {
+            currentDelivery = subtotal >= freeDeliveryThreshold ? 0 : deliveryFee;
+        }
+        grandTotal = subtotal + currentDelivery;
 
-  const det = detectPlatform(url);
-  if (!det) { showError('Platform not recognised. Supported: YouTube, TikTok, Instagram, Twitter/X, Facebook.'); return; }
+        if (count > 0 && subtotal < freeDeliveryThreshold) {
+            const remaining = freeDeliveryThreshold - subtotal;
+            freeDeliveryNote.hidden = false;
+            freeDeliveryNote.classList.remove('unlocked');
+            freeDeliveryNote.textContent = `Add Rs ${remaining.toLocaleString('en-US')} more to unlock free delivery`;
+        } else if (count > 0) {
+            freeDeliveryNote.hidden = false;
+            freeDeliveryNote.classList.add('unlocked');
+            freeDeliveryNote.textContent = `You've unlocked free delivery`;
+        } else {
+            freeDeliveryNote.hidden = true;
+        }
 
-  hideError();
-  hideResult();
-  isProcessing = true;
+        const cartCountEl = document.getElementById('cartCount');
+        cartCountEl.textContent = count;
+        cartCountEl.classList.remove('bump');
+        void cartCountEl.offsetWidth; // restart animation
+        cartCountEl.classList.add('bump');
 
-  const btn = document.getElementById('downloadBtn');
-  btn.classList.add('loading');
+        document.getElementById('cartSubtotal').textContent = `Rs ${subtotal.toLocaleString('en-US')}`;
+        document.getElementById('cartDelivery').textContent = currentDelivery === 0 && count > 0 ? 'Free' : `Rs ${currentDelivery.toLocaleString('en-US')}`;
+        document.getElementById('cartTotal').textContent = `Rs ${grandTotal.toLocaleString('en-US')}`;
+        document.getElementById('modalTotal').textContent = grandTotal.toLocaleString('en-US');
 
-  const progressWrap = document.getElementById('progressWrap');
-  const progressBar  = document.getElementById('progressBar');
-  const progressStatus = document.getElementById('progressStatus');
-  const progressPct    = document.getElementById('progressPct');
-  progressWrap.classList.add('show');
+        const summaryMini = document.getElementById('orderSummaryMini');
+        if (summaryMini) {
+            summaryMini.innerHTML = `<strong>${count} item${count === 1 ? '' : 's'}</strong> in your order — total <strong>Rs ${grandTotal.toLocaleString('en-US')}</strong>`;
+        }
+    }
 
-  // Animated progress while we wait for the API
-  const fakeSteps = [
-    { pct: 12, label: 'Resolving URL...' },
-    { pct: 30, label: 'Contacting server...' },
-    { pct: 55, label: 'Fetching video metadata...' },
-    { pct: 75, label: 'Processing streams...' },
-  ];
-  for (const s of fakeSteps) {
-    await delay(280 + Math.random() * 200);
-    progressBar.style.width = s.pct + '%';
-    progressStatus.textContent = s.label;
-    progressPct.textContent = s.pct + '%';
-  }
+    // --- UI interactions ---
+    function openCart() { cartSidebar.classList.add('open'); overlay.classList.add('active'); }
 
-  // Get selected quality
-  const activeQPill = document.querySelector('.quality-pill.active');
-  const selectedQ   = activeQPill ? activeQPill.textContent.trim() : '1080p';
-  const isAudio     = selectedQ === 'Audio';
-  const vQ          = qualityMap[selectedQ] || '1080';
-  const fmt         = document.getElementById('formatSelect').value;
+    function closeAll() {
+        cartSidebar.classList.remove('open');
+        checkoutModal.classList.remove('active');
+        mobileNav.classList.remove('open');
+        overlay.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+    }
 
-  let cobaltResult = null;
-  try {
-    cobaltResult = await callCobalt(url, vQ, isAudio, isAudio ? (fmt === 'mp4' ? 'mp3' : fmt) : 'mp3');
-  } catch (err) {
-    progressWrap.classList.remove('show');
-    btn.classList.remove('loading');
-    isProcessing = false;
-    showError('Could not reach the download server. Check your connection and try again.');
-    return;
-  }
-
-  progressBar.style.width = '90%';
-  progressStatus.textContent = 'Preparing links...';
-  progressPct.textContent = '90%';
-  await delay(300);
-
-  // Handle cobalt response statuses
-  // status: "stream" | "redirect" | "picker" | "error" | "rate-limit"
-  if (!cobaltResult || cobaltResult.status === 'error' || cobaltResult.status === 'rate-limit') {
-    progressWrap.classList.remove('show');
-    btn.classList.remove('loading');
-    isProcessing = false;
-    const msg = cobaltResult?.text || 'This video could not be fetched. It may be private, age-restricted, or region-locked.';
-    showError(msg);
-    return;
-  }
-
-  progressBar.style.width = '100%';
-  progressStatus.textContent = 'Ready!';
-  progressPct.textContent = '100%';
-  await delay(350);
-
-  // Build result UI
-  // Cobalt returns: { status, url, picker (array), filename, audio }
-  const dlOpts = document.getElementById('downloadOptions');
-  dlOpts.innerHTML = '';
-
-  const platformEmoji = { youtube:'▶', tiktok:'♪', instagram:'◈', twitter:'✦', facebook:'◉' };
-  const thumb = platformEmoji[det.name] || '🎬';
-  document.getElementById('thumbPlaceholder').textContent = thumb;
-  document.getElementById('resultTitle').textContent = cobaltResult.filename
-    ? cobaltResult.filename.replace(/\.[^.]+$/, '').replace(/_/g, ' ')
-    : `${det.label} Video`;
-  document.getElementById('metaDuration').textContent = '—';
-  document.getElementById('metaViews').textContent = det.label;
-  document.getElementById('metaDate').textContent = 'Live';
-  document.getElementById('metaAudio').textContent = isAudio ? fmt.toUpperCase() : 'Included';
-
-  if (cobaltResult.status === 'picker' && Array.isArray(cobaltResult.picker)) {
-    // Multiple streams (e.g. Instagram carousel, Twitter multi-video)
-    cobaltResult.picker.forEach((item, i) => {
-      const a = document.createElement('a');
-      a.className = 'dl-option';
-      a.href = item.url;
-      const ext = item.type === 'photo' ? 'jpg' : (fmt || 'mp4');
-      const fname = `video_${i + 1}.${ext}`;
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        triggerDownload(item.url, fname);
-        showToast('⬇', `Downloading file ${i + 1}...`);
-      });
-      a.innerHTML = `⬇ <span>${item.type === 'photo' ? 'Image' : 'Video'} ${i + 1}</span>`;
-      dlOpts.appendChild(a);
+    hamburgerBtn.addEventListener('click', () => {
+        mobileNav.classList.add('open');
+        menuOverlay.classList.add('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
     });
-  } else {
-    // Single stream or redirect
-    const videoUrl  = cobaltResult.url;
-    const audioUrl  = cobaltResult.audio;
-    const filename  = cobaltResult.filename || `video.${isAudio ? (fmt || 'mp3') : (fmt || 'mp4')}`;
 
-    if (videoUrl) {
-      const a = document.createElement('a');
-      a.className = 'dl-option';
-      a.href = videoUrl;
-      a.addEventListener('click', e => {
+    document.getElementById('cartBtn').addEventListener('click', openCart);
+    document.getElementById('closeCart').addEventListener('click', closeAll);
+    document.getElementById('closeModal').addEventListener('click', closeAll);
+    overlay.addEventListener('click', closeAll);
+    menuOverlay.addEventListener('click', closeAll);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAll();
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeAll));
+
+    document.getElementById('openCheckoutModal').addEventListener('click', () => {
+        if (cart.length === 0) { showToast('Your cart is empty'); return; }
+        cartSidebar.classList.remove('open');
+        checkoutModal.classList.add('active');
+    });
+
+    // --- WhatsApp order ---
+    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        triggerDownload(videoUrl, filename);
-        showToast('⬇', 'Download started!');
-      });
-      a.innerHTML = `⬇ <span>${isAudio ? 'Audio' : 'Video'}</span><span class="res">${isAudio ? fmt.toUpperCase() : selectedQ}</span>`;
-      dlOpts.appendChild(a);
-    }
+        if (cart.length === 0) { showToast('Your cart is empty'); return; }
 
-    // Also offer audio separately if available and not already audio mode
-    if (audioUrl && !isAudio) {
-      const b = document.createElement('a');
-      b.className = 'dl-option';
-      b.href = audioUrl;
-      b.addEventListener('click', e => {
-        e.preventDefault();
-        const af = filename.replace(/\.[^.]+$/, '.mp3');
-        triggerDownload(audioUrl, af);
-        showToast('🎵', 'Audio download started!');
-      });
-      b.innerHTML = `⬇ <span>Audio only</span><span class="res">MP3</span>`;
-      dlOpts.appendChild(b);
-    }
+        const formData = new FormData(e.target);
+        const name = formData.get('customerName').trim();
+        const phone = formData.get('customerPhone').trim();
+        const address = formData.get('customerAddress').trim();
+        const method = formData.get('payment');
 
-    // Fallback: open in new tab button
-    if (videoUrl || audioUrl) {
-      const c = document.createElement('a');
-      c.className = 'dl-option';
-      c.href = videoUrl || audioUrl;
-      c.target = '_blank';
-      c.rel = 'noopener';
-      c.innerHTML = `↗ <span>Open in tab</span>`;
-      dlOpts.appendChild(c);
-    }
-  }
+        if (!method) { showToast('Please select a payment method'); return; }
 
-  progressWrap.classList.remove('show');
-  document.getElementById('resultCard').classList.add('show');
-  btn.classList.remove('loading');
-  isProcessing = false;
-  showToast('✓', 'Ready to download!');
-}
+        const lines = [
+            `*New Order - AR Studio*`,
+            ``,
+            `*Customer Details:*`,
+            `Name: ${name}`,
+            `Phone: ${phone}`,
+            `Address: ${address}`,
+            `Payment Method: *${method}*`,
+            ``,
+            `*Order Items:*`
+        ];
+        cart.forEach(item => {
+            lines.push(`- ${item.name} (x${item.quantity}) = Rs ${(item.price * item.quantity).toLocaleString('en-US')}`);
+        });
+        const deliveryCharged = grandTotal - cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        lines.push('');
+        lines.push(`*Subtotal:* Rs ${cart.reduce((sum, i) => sum + i.price * i.quantity, 0).toLocaleString('en-US')}`);
+        lines.push(`*Delivery:* ${deliveryCharged === 0 ? 'Free' : 'Rs ' + deliveryCharged.toLocaleString('en-US')}`);
+        lines.push(`*Grand Total:* Rs ${grandTotal.toLocaleString('en-US')}`);
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+        const message = lines.join('\n');
+        const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-// ==================== KEYBOARD SHORTCUT ====================
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.activeElement === urlInput) {
-    startDownload();
-  }
-});
+        const submitBtn = document.getElementById('submitOrderBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Opening WhatsApp…';
 
-// ==================== URL INPUT ANIMATION ====================
-urlInput.addEventListener('paste', () => {
-  setTimeout(() => {
-    urlInput.dispatchEvent(new Event('input'));
-    showToast('📋', 'URL detected!');
-  }, 50);
-});
+        window.open(whatsappLink, '_blank', 'noopener');
 
-// ==================== SCROLL REVEAL ====================
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.style.animation = 'fadeUp 0.6s ease forwards';
-    }
-  });
-}, { threshold: 0.1 });
+        cart = [];
+        saveCart();
+        updateCart();
+        closeAll();
+        e.target.reset();
 
-document.querySelectorAll('.platform-card, .feature-card').forEach(el => {
-  el.style.opacity = '0';
-  observer.observe(el);
-});
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Order via WhatsApp (Rs <span id="modalTotal">0</span>)';
+        }, 600);
+    });
+
+    // --- Active nav link on scroll ---
+    const sections = document.querySelectorAll('section[id], footer[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => link.classList.toggle('active', link.dataset.section === entry.target.id));
+            }
+        });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    sections.forEach(sec => sectionObserver.observe(sec));
+
+    // --- Back to top ---
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.scrollY > 500);
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // --- Init ---
+    renderFilters();
+    renderProducts();
+    updateCart();
+})();
 </script>
 </body>
 </html>
